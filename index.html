@@ -142,7 +142,7 @@ const LOGOS = {
 
 const MARCA = "Colorvie";
 const PIE   = "Colorvie · Helados de colágeno · Belleza · Bienestar · Vida";
-const NOTA  = "* Los porcentajes de valores diarios se basan en una dieta de 2,000 calorías";
+const NOTA  = "* Tu bienestar comienza con pequeñas decisiones";
 
 const WHATSAPP = "573208631378";   // ← número que recibe los pedidos (57 = Colombia, sin + ni espacios)
 const ENVIO    = 6000;             // ← costo del envío en pesos (pon 0 si no cobras envío)
@@ -154,9 +154,8 @@ const PRODUCTOS = [
     nombre: "Mango",                       // ← nombre del sabor
     color: "#F59E0B", fondo: "#FFF1CC",    // color principal y color de fondo de la página
     logo: LOGOS.mango,
-    porcion: "1 unidad (122g)",
+    porcion: "1 unidad (141g)",
     porciones: "1",
-    energia: "30 kcal (126kJ)",
     colageno: "0,75 %",   // ← % de colágeno: cámbialo por el real
     precio: 7000,      // ← precio por unidad en pesos de este sabor (déjalo en 0 si no quieres mostrar precios)
     filas: [
@@ -175,9 +174,9 @@ const PRODUCTOS = [
     porcion: "1 unidad (122g)",
     porciones: "1",
     energia: "30 kcal (126kJ)",
-    colageno: "0,75 %",   // ← % de colágeno: cámbialo por el real
+    colageno: "0 %",   // ← % de colágeno: cámbialo por el real
     precio: 7000,      // ← precio por unidad en pesos de este sabor (déjalo en 0 si no quieres mostrar precios)
-filas: [
+    filas: [
   { nombre: "Grasa Total",           valor: "4 g",   vd: "5 %" },
   { nombre: "Grasa saturada",        valor: "2.5 g", vd: "13 %"},
   { nombre: "Sodio",                 valor: "45 mg", vd: "2 %" },
@@ -185,36 +184,36 @@ filas: [
   { nombre: "Fibra",                 valor: "1 g",   vd: "4 %" },
   { nombre: "Proteínas",             valor: "3 g",   vd: "6 %" }
 ]
-]
   },
   {
-    nombre: "Sabor Verde",
+    nombre: "limon",
     color: "#3FA72B", fondo: "#E3F5DC",
     logo: LOGOS.verde,
     porcion: "1 unidad (122g)",
     porciones: "1",
     energia: "30 kcal (126kJ)",
-    colageno: "0,75 %",   // ← % de colágeno: cámbialo por el real
+    colageno: "0 %",   // ← % de colágeno: cámbialo por el real
     precio: 7000,      // ← precio por unidad en pesos de este sabor (déjalo en 0 si no quieres mostrar precios)
-filas: [
-  { nombre: "Grasa Total",           valor: "4 g",   vd: "5 %" },
+    filas: [
+   { nombre: "Grasa Total",           valor: "4 g",   vd: "5 %" },
   { nombre: "Grasa saturada",        valor: "2.5 g", vd: "13 %"},
   { nombre: "Sodio",                 valor: "45 mg", vd: "2 %" },
   { nombre: "Carbohidratos Totales", valor: "25 g",  vd: "9 %" },
   { nombre: "Fibra",                 valor: "1 g",   vd: "4 %" },
   { nombre: "Proteínas",             valor: "3 g",   vd: "6 %" }
 ]
+  },
   {
-    nombre: "Vainilla",
+    nombre: " vainilla",
     color: "#1E88E5", fondo: "#DDEEFD",
     logo: LOGOS.azul,
     porcion: "1 unidad (122g)",
     porciones: "1",
     energia: "30 kcal (126kJ)",
-    colageno: "0,75 %",   // ← % de colágeno: cámbialo por el real
+    colageno: "0 %",   // ← % de colágeno: cámbialo por el real
     precio: 7000,      // ← precio por unidad en pesos de este sabor (déjalo en 0 si no quieres mostrar precios)
-filas: [
-  { nombre: "Grasa Total",           valor: "4 g",   vd: "5 %" },
+    filas: [
+   { nombre: "Grasa Total",           valor: "4 g",   vd: "5 %" },
   { nombre: "Grasa saturada",        valor: "2.5 g", vd: "13 %"},
   { nombre: "Sodio",                 valor: "45 mg", vd: "2 %" },
   { nombre: "Carbohidratos Totales", valor: "25 g",  vd: "9 %" },
