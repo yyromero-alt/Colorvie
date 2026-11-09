@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -151,13 +150,14 @@
       <div class="total"><span>Total</span><span id="total"></span></div>
     </div>
     <input id="cliente" placeholder="Tu nombre">
+    <input id="telefono" type="tel" inputmode="tel" placeholder="Tu número de WhatsApp (ej. 3001234567)" oninput="pintarPedido()">
     <select id="municipio" onchange="pintarPedido()"></select>
     <textarea id="notas" rows="2" placeholder="Dirección y barrio / notas del pedido"></textarea>
     <button class="wa" id="btnWa" onclick="enviarPedido()" disabled>
       <svg viewBox="0 0 32 32"><path d="M16 3C9 3 3.3 8.7 3.3 15.7c0 2.3.6 4.4 1.7 6.3L3 29l7.2-1.9c1.8 1 3.8 1.5 5.8 1.5 7 0 12.7-5.7 12.7-12.7S23 3 16 3zm0 23.1c-1.8 0-3.6-.5-5.1-1.4l-.4-.2-4.3 1.1 1.2-4.2-.3-.4a10.4 10.4 0 1 1 8.9 5.1zm5.7-7.8c-.3-.2-1.8-.9-2.1-1s-.5-.2-.7.2-.8 1-1 1.2-.4.2-.7.1a8.500 8.500 0 0 1-4.200-3.700c-.3-.6.3-.5.9-1.700.1-.2 0-.4 0-.5l-.9-2.200c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4s-1 1-1 2.500 1.100 2.900 1.200 3.100 2.100 3.300 5.200 4.600c1.900.8 2.700.9 3.600.7.600-.1 1.800-.7 2-1.400s.3-1.300.2-1.400-.3-.2-.6-.3z"/></svg>
       Pedir por WhatsApp
     </button>
-    <p class="aviso">Elige tu municipio para activar el botón. Se abrirá WhatsApp con tu pedido listo para enviar.</p>
+    <p class="aviso">Escribe tu número de WhatsApp y elige tu municipio para activar el botón. Se abrirá WhatsApp con tu pedido listo para enviar.</p>
   </div>
 </div>
 
@@ -197,6 +197,9 @@ const WHATSAPP   = "573208631378";
 const ENVIO      = 3000;
 const MUNICIPIOS = ["Funza", "Mosquera"];
 const SALUDO     = "¡Hola Colorvie! 🍦 Quiero hacer este pedido:";
+
+/* ===== URL de la aplicación web de Apps Script (termina en /exec) ===== */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxmvhv_QJ1h8zJvUUqMJn2SF-E9QfOviGDHgcJYxguhy5JXcMgYXzQwp6LQ9qZjqQY2lg/exec";
 
 const PRODUCTOS = [
   {
@@ -286,10 +289,10 @@ function pintarPedido() {
   $("envioFila").hidden = !ENVIO;
   $("envio").textContent = fmt(ENVIO);
   $("total").textContent = fmt(sub + ENVIO);
-  $("btnWa").disabled = cant.every(c => c === 0) || !$("municipio").value;
+  $("btnWa").disabled = cant.every(c => c === 0) || !$("municipio").value || $("telefono").value.replace(/\D/g, "").length < 10;
 }
 
-function enviarPedido() {
+async function enviarPedido() {
   const lineas = PRODUCTOS.map((p, i) => cant[i] ? `• ${cant[i]} x ${p.nombre}` : null).filter(Boolean);
   const sub = PRODUCTOS.reduce((t, p, i) => t + p.precio * cant[i], 0);
   let msg = SALUDO + "\n" + lineas.join("\n");
@@ -300,8 +303,42 @@ function enviarPedido() {
   }
   msg += "\nMunicipio: " + $("municipio").value + ", Cundinamarca";
   if ($("cliente").value.trim()) msg += "\nNombre: " + $("cliente").value.trim();
+  msg += "\nWhatsApp: " + $("telefono").value.trim();
   if ($("notas").value.trim())   msg += "\nDirección/Notas: " + $("notas").value.trim();
-  window.open("https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(msg), "_blank");
+  const urlWa = "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(msg);
+
+  /* Abrir la ventana YA (evita bloqueo de pop-up) y luego redirigirla */
+  const ventana = window.open("", "_blank");
+  const btn = $("btnWa"); btn.disabled = true; btn.lastChild.textContent = " Enviando...";
+
+  const datos = {
+    items: PRODUCTOS.map((p, i) => cant[i]
+      ? { producto: p.nombre, unidades: cant[i], valor: p.precio * cant[i] } : null).filter(Boolean),
+    envio: ENVIO,
+    total: sub + ENVIO,
+    nombre: $("cliente").value.trim(),
+    municipio: $("municipio").value,
+    telefono: $("telefono").value.trim(),
+    direccion: $("notas").value.trim()
+  };
+
+  /* Guardar en la hoja y esperar (máx. 6 s) antes de abrir WhatsApp */
+  try {
+    const ctl = new AbortController();
+    const t = setTimeout(() => ctl.abort(), 6000);
+    await fetch(SCRIPT_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(datos),
+      signal: ctl.signal
+    });
+    clearTimeout(t);
+  } catch (e) { console.error("Error guardando en la hoja:", e); }
+
+  btn.lastChild.textContent = " Pedir por WhatsApp";
+  pintarPedido();
+  if (ventana) ventana.location.href = urlWa; else location.href = urlWa;
 }
 
 $("zona").textContent = "📍 Envíos únicamente a " + MUNICIPIOS.join(" y ") + ", Cundinamarca";
